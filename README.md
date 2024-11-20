@@ -17,13 +17,19 @@
     pip install -r requirements.txt 
 ```
 
+
+for the console execution you will create folder generated/java in the main of project
+```bash
+   mkdir -p generated/java
+```
+
 #### 4. Start the project
 ```bash
     cd src
 
     flask run     #for the api version
 
-    python3 main.py    #for the command version
+    python3 main.py    #for the cosole version
 ```
 
 #### 4. Desactivate de virtual environment
