@@ -1,0 +1,11 @@
+# Environnements virtuels
+venv/
+ENV/
+env/
+.env/
+
+# Fichiers de test
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
