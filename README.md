@@ -9,7 +9,9 @@
 
 #### 2. Activate de virtual envrionment
 ```bash
-    source venv/bin/activate
+    source venv/bin/activate  #sous linux
+
+    venv\Scripts\activate     #sous windows
 ```
 
 #### 3. Install dependences
