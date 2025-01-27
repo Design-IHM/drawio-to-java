@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from model.uml_model import UMLClass, UMLAttribute, UMLMethod, UMLRelation
+from .model.uml_model import UMLClass, UMLAttribute, UMLMethod, UMLRelation
 
 class DrawIOParser:
     def __init__(self):

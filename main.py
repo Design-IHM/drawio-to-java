@@ -1,6 +1,6 @@
-from drawio_parser import DrawIOParser
-from code_generator import JavaCodeGenerator
-from model.uml_model import UMLClass, UMLAttribute, UMLMethod, UMLRelation
+from src.drawio_parser import DrawIOParser
+from src.code_generator import JavaCodeGenerator
+from src.model.uml_model import UMLClass, UMLAttribute, UMLMethod, UMLRelation
 import os
 
 DEFAULT_OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'generated', 'java')

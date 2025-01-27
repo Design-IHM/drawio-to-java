@@ -1,5 +1,5 @@
 import os
-from model.uml_model import UMLClass
+from .model.uml_model import UMLClass
 
 class JavaCodeGenerator:
     def __init__(self, output_dir: str):

@@ -8,8 +8,8 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-from drawio_parser import DrawIOParser
-from code_generator import JavaCodeGenerator
+from src.drawio_parser import DrawIOParser
+from src.code_generator import JavaCodeGenerator
 
 app = Flask(__name__)
 CORS(app)  # Autoriser les requêtes depuis le front-end React
