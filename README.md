@@ -29,7 +29,7 @@ for the console execution you will create folder generated/java in the main of p
 ```bash
     flask run     #for the api version
 
-    python3 main.py    #for the cosole version
+    python3 app.py    #for the cosole version
 ```
 
 #### 4. Desactivate de virtual environment
