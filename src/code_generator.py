@@ -1,29 +1,42 @@
 import os
-from .model.uml_model import UMLClass
+from .model.uml_model import UMLClass, UMLAttribute, UMLMethod
 
 class JavaCodeGenerator:
     def __init__(self, output_dir: str):
         self.output_dir = output_dir
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
-    # Génération des fichiers Java pour chaque classe UML
     def generate(self, classes: list[UMLClass]):
+        """
+        Génère des fichiers Java pour une liste de classes UML.
+        """
         for uml_class in classes:
-            self._generate_class_file(uml_class)
+            try:
+                self._generate_class_file(uml_class)
+            except Exception as e:
+                print(f"Erreur lors de la génération de la classe {uml_class.name}: {e}")
 
     def _generate_class_file(self, uml_class: UMLClass):
+        """
+        Génère un fichier Java pour une classe UML donnée.
+        """
         file_path = os.path.join(self.output_dir, f"{uml_class.name}.java")
-
-        with open(file_path, 'w') as file:
-            file.write(self._generate_class_code(uml_class))
+        try:
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.write(self._generate_class_code(uml_class))
+        except Exception as e:
+            raise RuntimeError(f"Impossible d'écrire le fichier {file_path}: {e}")
 
     def _generate_class_code(self, uml_class: UMLClass) -> str:
+        """
+        Génère le code Java complet pour une classe UML.
+        """
         lines = []
 
-        # Ajout du package
+        # Ajout du package et des imports (personnalisables)
         lines.append("//package com.example.myproject;")
         lines.append("")
-
-        # Ajout des imports
         lines.append("//import java.util.*;")
         lines.append("")
 
@@ -31,32 +44,24 @@ class JavaCodeGenerator:
         lines.append(self._generate_class_declaration(uml_class))
         lines.append("{")
 
-        # Attributs avec commentaires
-        for attr in uml_class.attributes:
-            lines.append(f"    private {attr.type} {attr.name};")
+        # Attributs
+        lines.extend(self._generate_attributes(uml_class))
         lines.append("")
 
         # Constructeur par défaut
-        lines.append(f"    public {uml_class.name}() {{")
-        lines.append("    }")
+        lines.append(self._generate_default_constructor(uml_class))
         lines.append("")
 
         # Getters et Setters
-        for attr in uml_class.attributes:
-            lines.append(self._generate_getter(attr))
-            lines.append("")
-            lines.append(self._generate_setter(attr))
-            lines.append("")
+        lines.extend(self._generate_getters_and_setters(uml_class))
+        lines.append("")
 
         # Méthodes
-        for method in uml_class.methods:
-            lines.append(self._generate_method(method))
-            lines.append("")
-
-        # Relations (si définies)
-        for relation in uml_class.relations:
-            lines.append(f"    // Relation: {relation.type} with {relation.target_id}")
+        lines.extend(self._generate_methods(uml_class))
         lines.append("")
+
+        # Relations (ajoutées comme commentaires pour une meilleure documentation)
+        lines.extend(self._generate_relations_comments(uml_class))
 
         # Fin de la classe
         lines.append("}")
@@ -65,7 +70,7 @@ class JavaCodeGenerator:
 
     def _generate_class_declaration(self, uml_class: UMLClass) -> str:
         """
-        Génère la déclaration de la classe
+        Génère la déclaration de la classe.
         """
         parts = ["public"]
 
@@ -83,42 +88,89 @@ class JavaCodeGenerator:
 
         return " ".join(parts)
 
-    def _generate_getter(self, attr) -> str:
+    def _generate_attributes(self, uml_class: UMLClass) -> list[str]:
         """
-        Génère le getter pour un attribut
+        Génère les déclarations d'attributs.
+        """
+        lines = []
+        for attr in uml_class.attributes:
+            lines.append(f"    private {attr.type} {attr.name};")
+        return lines
+
+    def _generate_default_constructor(self, uml_class: UMLClass) -> str:
+        """
+        Génère un constructeur par défaut.
+        """
+        return f"""    public {uml_class.name}() {{
+        // Constructeur par défaut
+    }}"""
+
+    def _generate_getters_and_setters(self, uml_class: UMLClass) -> list[str]:
+        """
+        Génère les getters et setters pour chaque attribut.
+        """
+        lines = []
+        for attr in uml_class.attributes:
+            lines.append(self._generate_getter(attr))
+            lines.append(self._generate_setter(attr))
+        return lines
+
+    def _generate_getter(self, attr: UMLAttribute) -> str:
+        """
+        Génère un getter pour un attribut.
         """
         return f"""    public {attr.type} get{attr.name.capitalize()}() {{
         return {attr.name};
     }}"""
 
-    def _generate_setter(self, attr) -> str:
+    def _generate_setter(self, attr: UMLAttribute) -> str:
         """
-        Génère le setter pour un attribut
+        Génère un setter pour un attribut.
         """
         return f"""    public void set{attr.name.capitalize()}({attr.type} {attr.name}) {{
         this.{attr.name} = {attr.name};
     }}"""
 
-    def _generate_method(self, method) -> str:
+    def _generate_methods(self, uml_class: UMLClass) -> list[str]:
         """
-        Génère le code pour une méthode
+        Génère les méthodes pour une classe UML.
         """
-        params = []
-        for param_name, param_type in method.parameters:
-            params.append(f"{param_type} {param_name}")
+        lines = []
+        for method in uml_class.methods:
+            lines.append(self._generate_method(method))
+        return lines
 
+    def _generate_method(self, method: UMLMethod) -> str:
+        """
+        Génère le code pour une méthode.
+        """
+        params = [f"{param_type} {param_name}" for param_name, param_type in method.parameters]
         method_str = f"    {method.visibility} {method.return_type} {method.name}({', '.join(params)}) {{"
 
-        # Ajouter un return par défaut si nécessaire
         if method.return_type != "void":
-            if method.return_type in ["int", "long", "short", "byte"]:
-                method_str += "\n        return 0;"
-            elif method.return_type in ["float", "double"]:
-                method_str += "\n        return 0.0;"
-            elif method.return_type == "boolean":
-                method_str += "\n        return false;"
-            else:
-                method_str += "\n        return null;"
+            default_return = self._get_default_return_value(method.return_type)
+            method_str += f"\n        return {default_return};"
 
         method_str += "\n    }"
         return method_str
+
+    def _get_default_return_value(self, return_type: str) -> str:
+        """
+        Renvoie une valeur de retour par défaut pour un type donné.
+        """
+        if return_type in ["int", "long", "short", "byte"]:
+            return "0"
+        elif return_type in ["float", "double"]:
+            return "0.0"
+        elif return_type == "boolean":
+            return "false"
+        return "null"
+
+    def _generate_relations_comments(self, uml_class: UMLClass) -> list[str]:
+        """
+        Ajoute des relations comme commentaires dans le code généré.
+        """
+        lines = []
+        for relation in uml_class.relations:
+            lines.append(f"    // Relation: {relation.type} with {relation.target_id}")
+        return lines
