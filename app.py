@@ -16,20 +16,32 @@ app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000", "https://drawio-to-java-production.up.railway.app"])
 
 # Configurer Swagger
-swagger_config = {
-    "swagger": "2.0",
-    "info": {
-        "title": "DrawIO to Java API",
-        "description": "API pour convertir des fichiers DrawIO en code Java.",
-        "version": "1.0.0",
-    },
-    "host": "localhost:5000",  # À modifier selon l'environnement (ex. votre domaine déployé)
-    "basePath": "/",
-}
 swagger_template = {
     "swagger": "2.0",
-    "info": {"title": "DrawIO to Java API", "description": "API Documentation", "version": "1.0.0"},
+    "info": {
+        "title": "API Documentation",
+        "description": "Documentation interactive des endpoints de votre API.",
+        "version": "1.0.0",
+    },
+    "host": "localhost:5000",  # Remplacez par l'hôte de votre déploiement
+    "schemes": ["http", "https"]
 }
+
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": "apispec",
+            "route": "/apispec.json",
+            "rule_filter": lambda rule: True,  # Tous les endpoints sont inclus
+            "model_filter": lambda tag: True,  # Tous les modèles sont inclus
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/",
+}
+
 swagger = Swagger(app, config=swagger_config, template=swagger_template)
 
 # Définir les répertoires d'upload et de génération
