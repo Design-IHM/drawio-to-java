@@ -12,7 +12,7 @@ from src.drawio_parser import DrawIOParser
 from src.code_generator import JavaCodeGenerator
 
 app = Flask(__name__)
-CORS(app)  # Autoriser les requêtes depuis le front-end React
+CORS(app, origins=["http://localhost:3000", "https://drawio-to-java-production.up.railway.app"])
 
 # Définir les répertoires d'upload et de génération
 UPLOAD_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
