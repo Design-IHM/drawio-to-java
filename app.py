@@ -13,7 +13,7 @@ from src.drawio_parser import DrawIOParser
 from src.code_generator import JavaCodeGenerator
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "https://drawio-to-java-production.up.railway.app"])
+CORS(app, origins=["https://drawio-to-java.vercel.app", "https://drawio-to-java-production.up.railway.app"])
 
 # Configurer Swagger
 swagger_template = {
