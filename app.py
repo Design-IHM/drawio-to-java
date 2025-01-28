@@ -23,7 +23,7 @@ swagger_template = {
         "description": "Documentation interactive des endpoints de votre API.",
         "version": "1.0.0",
     },
-    "host": "localhost:5000",  # Remplacez par l'hôte de votre déploiement
+    "host": "localhost:5000",
     "schemes": ["http", "https"]
 }
 
@@ -33,8 +33,8 @@ swagger_config = {
         {
             "endpoint": "apispec",
             "route": "/apispec.json",
-            "rule_filter": lambda rule: True,  # Tous les endpoints sont inclus
-            "model_filter": lambda tag: True,  # Tous les modèles sont inclus
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
         }
     ],
     "static_url_path": "/flasgger_static",
@@ -153,5 +153,4 @@ def documentation():
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(debug=False)
